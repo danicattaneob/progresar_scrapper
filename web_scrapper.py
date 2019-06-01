@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 import time
 import yaml
+import sys
 
 
 def check(user, password):
@@ -10,7 +11,7 @@ def check(user, password):
     driver.get('https://becasprogresar.educacion.gob.ar/#sesion')
     eleShowMsgBtn = driver.find_element_by_class_name('btn-success')
     eleShowMsgBtn.click()
-    time.sleep(2)
+    time.sleep(1)
     user_input = driver.find_element_by_id("usuarioz")
     user_input.click()
     user_input.send_keys(user)
@@ -45,14 +46,14 @@ def log_in_email(mail_credentials):
         server.ehlo()
         server.login(gmail_user, gmail_password)
     except:  
-        print('Something went wrong...')
+        print('Something went wrong logging in ...')
     return server
 
 
-def send_email(mail_credentials):
+def send_email(mail_credentials, send_to, message):
     server = log_in_email(mail_credentials)
     sent_from = mail_credentials["user"]
-    to = ['sadaca96@gmail.com']  
+    to = send_to
     subject = 'Hubieron cambios en la pagina de progresar'  
     body = 'Wacho entra ya a la pagina: https://becasprogresar.educacion.gob.ar'
 
@@ -70,25 +71,27 @@ def send_email(mail_credentials):
 
         print('Email sent!')
     except:  
-        print('Something went wrong...')
+        print('Something went wrong while sending the email...')
 
 
-def demon(user, password, mail_credentials):
+def demon(user, password, mail_credentials, send_to):
     result = check(user, password)
     print(result)
     new_result = result
     while result == new_result:
-        time.sleep(3600)
+        time.sleep(1800)
         new_result = check(user, password)
         print(new_result)
         # break
-    send_email(mail_credentials)
+    send_email(mail_credentials, send_to, new_result)
 
 
-def main():
+def main(send_to):
     credentials = get_credentials() 
-    demon(credentials["progresar"]["user"], credentials["progresar"]["password"], credentials["mail"])
+    demon(credentials["progresar"]["user"], credentials["progresar"]["password"], credentials["mail"], send_to)
     
 
 if __name__ == '__main__':
-    main()
+    args = sys.argv
+    emails_to = args[1:]
+    main(emails_to)
