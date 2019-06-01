@@ -104,5 +104,4 @@ venv.bak/
 .mypy_cache/
 
 # propios
-credentials.yaml
 chromedriver.exe
