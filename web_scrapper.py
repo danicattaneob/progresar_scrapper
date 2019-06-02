@@ -51,6 +51,7 @@ def log_in_email(mail_credentials):
 
 
 def send_email(mail_credentials, send_to, message):
+    formated_message = message.replace('á', 'a').replace('é', 'e').replace('í', 'i').replace('ó', 'o').replace('ú', 'u')
     server = log_in_email(mail_credentials)
     sent_from = mail_credentials["user"]
     to = send_to
@@ -62,7 +63,8 @@ def send_email(mail_credentials, send_to, message):
     "To: {}".format(to),
     "Subject: {}".format(subject),
     "",
-    "` {} `".format(body)
+    " {} ".format(body),
+    " {} ".format(formated_message)
     ])
 
     try:  
