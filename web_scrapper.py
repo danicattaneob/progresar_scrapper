@@ -50,20 +50,18 @@ def log_in_email(mail_credentials):
     return server
 
 
-def send_email(mail_credentials, send_to, message):
+def send_email(mail_credentials, send_to, subject, message):
     formated_message = message.replace('á', 'a').replace('é', 'e').replace('í', 'i').replace('ó', 'o').replace('ú', 'u')
     server = log_in_email(mail_credentials)
     sent_from = mail_credentials["user"]
     to = send_to
-    subject = 'Hubieron cambios en la pagina de progresar'  
-    body = 'Wacho entra ya a la pagina: https://becasprogresar.educacion.gob.ar'
-
+    
     msg = "\r\n".join([
     "From: {}".format(sent_from),
     "To: {}".format(to),
     "Subject: {}".format(subject),
     "",
-    " {} ".format(body),
+    # " {} ".format(body),
     " {} ".format(formated_message)
     ])
 
@@ -72,21 +70,28 @@ def send_email(mail_credentials, send_to, message):
         server.close()
 
         print('Email sent!')
-    except:  
-        print('Something went wrong while sending the email...')
+    except Exception as e:  
+        print('Something went wrong while sending the email...' + str(e))
 
 
 def demon(user, password, mail_credentials, send_to):
-    result = check(user, password)
-    print(result)
-    new_result = result
-    while result == new_result:
-        time.sleep(1800)
-        new_result = check(user, password)
+    try:
+        result = check(user, password)
+        print(result)
+        new_result = result
+        while result == new_result:
+            time.sleep(1800)
+            new_result = check(user, password)
+            print(new_result)
+            # break
         print(new_result)
-        # break
-    send_email(mail_credentials, send_to, new_result)
-
+        subject = 'Hubieron cambios en la pagina de progresar'  
+        body = 'Revisa los nuevos camibios en la pagina: https://becasprogresar.educacion.gob.ar \r\n' + new_result
+        send_email(mail_credentials, send_to, subject, body)
+    except Exception as e:
+        subject = 'Ocurrio un error en la ejecucion de la prueba'  
+        body = 'Ha ocurrido el siguiente error durante la ejecucion de la prueba \r\n' + str(e)
+        send_email(mail_credentials, send_to, subject, body)
 
 def main(send_to):
     credentials = get_credentials() 
